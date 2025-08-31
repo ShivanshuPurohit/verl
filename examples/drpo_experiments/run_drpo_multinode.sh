@@ -1,0 +1,61 @@
+set -x
+
+export VLLM_ATTENTION_BACKEND=XFORMERS
+export VLLM_LOGGING_CONFIG_PATH=examples/vllm_logging_config.json
+deepscale_train_path=//home/chase/data-instruct-format/data/deepscale/train.parquet
+math_test_path=//home/chase/data-instruct-format/data/math/test.parquet
+aime24_test_path=//home/chase/data-instruct-format/data/aime-2024/test.parquet
+aime25_test_path=//home/chase/data-instruct-format/data/aime-2025/test.parquet
+
+train_files="['$deepscale_train_path']"
+test_files="['$math_test_path', '$aime24_test_path', '$aime25_test_path']"
+
+python3 -m verl.trainer.main_drpo \
+    --config-name drpo_trainer \
+    data.train_files="$train_files" \
+    data.val_files="$test_files" \
+    data.train_batch_size=4096 \
+    +data.gen_batch_size=528 \
+    data.max_prompt_length=2048 \
+    data.max_response_length=8192 \
+    actor_rollout_ref.model.path=deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B \
+    actor_rollout_ref.model.enable_gradient_checkpointing=True \
+    actor_rollout_ref.model.use_remove_padding=True \
+    actor_rollout_ref.actor.ppo_max_token_len_per_gpu=12000 \
+    actor_rollout_ref.actor.use_dynamic_bsz=True \
+    actor_rollout_ref.actor.optim.lr=1e-6 \
+    +actor_rollout_ref.actor.online_prob=0.5 \
+    actor_rollout_ref.actor.ppo_mini_batch_size=2048 \
+    actor_rollout_ref.actor.fsdp_config.param_offload=False \
+    actor_rollout_ref.actor.fsdp_config.optimizer_offload=False \
+    actor_rollout_ref.actor.tau=0.1 \
+    actor_rollout_ref.rollout.log_prob_micro_batch_size_per_gpu=32 \
+    actor_rollout_ref.rollout.tensor_model_parallel_size=2 \
+    actor_rollout_ref.rollout.name=vllm \
+    actor_rollout_ref.rollout.n=8 \
+    actor_rollout_ref.rollout.async_gen=True \
+    actor_rollout_ref.rollout.replay_buffer_size=50000 \
+    actor_rollout_ref.rollout.cleanba_style=False \
+    actor_rollout_ref.rollout.gpu_memory_utilization=0.95 \
+    actor_rollout_ref.rollout.disable_log_stats=False \
+    actor_rollout_ref.rollout.max_num_batched_tokens=32768 \
+    actor_rollout_ref.rollout.max_num_seqs=4096 \
+    actor_rollout_ref.rollout.update_interval=10 \
+    +actor_rollout_ref.rollout.val_kwargs.temperature=1.0 \
+    +actor_rollout_ref.rollout.val_kwargs.n=3 \
+    trainer.val_generations_to_log_to_wandb=32 \
+    trainer.critic_warmup=0 \
+    +trainer.val_before_train=True \
+    trainer.logger=['console','wandb'] \
+    trainer.project_name='drpo_experiments' \
+    trainer.experiment_name='qwen-1.5b-r1-distill_async-drpo_weight-sync-10_online-prob-0.5_replay-buffer-50k_tau-0.1' \
+    +trainer.remove_previous_ckpt_in_save=False \
+    +trainer.del_local_ckpt_after_load=False \
+    trainer.resume_mode=disable \
+    +trainer.env=//home/chase/.env \
+    trainer.n_gpus_per_node=8 \
+    +trainer.inference_nodes=3 \
+    trainer.nnodes=4 \
+    trainer.save_freq=-1 \
+    trainer.test_freq=10 \
+    trainer.total_epochs=2 $@

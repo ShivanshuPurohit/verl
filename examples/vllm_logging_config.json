@@ -1,0 +1,48 @@
+{
+  "formatters": {
+    "vllm": {
+      "class": "vllm.logging_utils.NewLineFormatter",
+      "datefmt": "%m-%d %H:%M:%S",
+      "format": "%(levelname)s %(asctime)s %(filename)s:%(lineno)d] %(message)s"
+    }
+  },
+  "handlers": {
+    "vllm": {
+      "class" : "logging.StreamHandler",
+      "formatter": "vllm",
+      "level": "INFO",
+      "stream": "ext://sys.stdout"
+    },
+    "verl": {
+      "class" : "logging.StreamHandler",
+      "formatter": "vllm",
+      "level": "INFO",
+      "stream": "ext://sys.stdout"
+    },
+    "verl_f": {
+      "class" : "logging.FileHandler",
+      "formatter": "vllm",
+      "level": "INFO",
+      "filename": "verl_latest.log"
+    },
+    "vllm_f": {
+      "class" : "logging.FileHandler",
+      "formatter": "vllm",
+      "level": "INFO",
+      "filename": "vllm_latest.log"
+    }
+  },
+  "loggers": {
+    "vllm": {
+      "handlers": ["vllm", "vllm_f"],
+      "level": "INFO",
+      "propagate": false
+    },
+    "verl": {
+      "handlers": ["verl", "verl_f"],
+      "level": "INFO",
+      "propagate": false
+    }
+  },
+  "version": 1
+}

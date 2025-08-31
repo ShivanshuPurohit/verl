@@ -1,0 +1,9 @@
+FROM nvcr.io/nvidia/pytorch:25.01-py3
+
+RUN pip3 install --upgrade pip setuptools wheel
+RUN pip3 install torch==2.5.1
+RUN pip3 install flash-attn --no-build-isolation
+
+COPY ./verl /verl
+
+RUN cd /verl && pip3 install -e .[gpu]

@@ -1,0 +1,2 @@
+python think-mode/data_process/download_sft_data.py --data_source RLAIF/OpenThoughts3-ThinkMode-SFT --local_dir data-think-only/open-thoughts-think-mode-sft --think_only
+python think-mode/data_process/download_sft_data.py --data_source RLAIF/ServiceNow-ThinkMode-SFT --local_dir data-think-only/servicenow-think-mode-sft --think_only

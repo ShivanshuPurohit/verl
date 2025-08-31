@@ -1,0 +1,13 @@
+FROM cr.eu-north1.nebius.cloud/e00faee7vas5hpsh3s/tractoray/default:2025-04-10-21-17-47-7f93a1500
+# This base image includes the dependencies for tractoray+cuda+IB
+
+RUN pip3 install --upgrade pip setuptools wheel
+RUN pip3 install torch==2.5.1
+RUN pip3 install flash-attn --no-build-isolation
+RUN pip3 install debugpy==1.8.0
+
+COPY ./verl /verl
+
+RUN cd /verl && pip3 install -e .[gpu]
+
+RUN apt install -y git
