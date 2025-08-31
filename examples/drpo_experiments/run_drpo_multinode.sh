@@ -2,13 +2,6 @@ set -x
 
 export VLLM_ATTENTION_BACKEND=XFORMERS
 export VLLM_LOGGING_CONFIG_PATH=examples/vllm_logging_config.json
-deepscale_train_path=//home/chase/data-instruct-format/data/deepscale/train.parquet
-math_test_path=//home/chase/data-instruct-format/data/math/test.parquet
-aime24_test_path=//home/chase/data-instruct-format/data/aime-2024/test.parquet
-aime25_test_path=//home/chase/data-instruct-format/data/aime-2025/test.parquet
-
-train_files="['$deepscale_train_path']"
-test_files="['$math_test_path', '$aime24_test_path', '$aime25_test_path']"
 
 python3 -m verl.trainer.main_drpo \
     --config-name drpo_trainer \
@@ -52,7 +45,6 @@ python3 -m verl.trainer.main_drpo \
     +trainer.remove_previous_ckpt_in_save=False \
     +trainer.del_local_ckpt_after_load=False \
     trainer.resume_mode=disable \
-    +trainer.env=//home/chase/.env \
     trainer.n_gpus_per_node=8 \
     +trainer.inference_nodes=3 \
     trainer.nnodes=4 \
