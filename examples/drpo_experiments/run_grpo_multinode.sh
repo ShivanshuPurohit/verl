@@ -6,8 +6,8 @@ export VLLM_LOGGING_CONFIG_PATH=examples/vllm_logging_config.json
 
 python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
-    data.train_files=//home/chase/data/deepscaler-preview/train.parquet \
-    data.val_files=//home/chase/data/math/test.parquet \
+    data.train_files=data/deepscaler-preview/train.parquet \
+    data.val_files=data/math/test.parquet \
     data.train_batch_size=32 \
     +data.gen_batch_size=512 \
     data.filter_overlong_prompts=True \
