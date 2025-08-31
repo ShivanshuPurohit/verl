@@ -47,7 +47,6 @@ python3 -m verl.trainer.main_ppo \
     trainer.project_name='drpo_experiments' \
     trainer.experiment_name='qwen32b_grpo_no_kl' \
     trainer.n_gpus_per_node=8 \
-    +trainer.env=//home/chase/.env \
     trainer.nnodes=4 \
     trainer.save_freq=-1 \
     trainer.test_freq=5 \
