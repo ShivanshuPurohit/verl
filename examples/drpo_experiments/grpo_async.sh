@@ -2,13 +2,11 @@ set -x
 
 export VLLM_ATTENTION_BACKEND=XFORMERS
 export VLLM_LOGGING_CONFIG_PATH=examples/vllm_logging_config.json
-SPECIFIC_CHECKPOINT="//home/shiv/test_ckpts/drpo_async/global_step_14"
-# trainer.resume_from_path=$SPECIFIC_CHECKPOINT \
 
 python3 -m verl.trainer.main_drpo \
     --config-name grpo_trainer_async \
-    data.train_files=//home/chase/data/big-math/train.parquet \
-    data.val_files=//home/chase/data/big-math/test.parquet \
+    data.train_files=data/big-math/train.parquet \
+    data.val_files=data/big-math/test.parquet \
     data.train_batch_size=32\
     +data.gen_batch_size=128 \
     data.max_prompt_length=2048 \
@@ -50,14 +48,11 @@ python3 -m verl.trainer.main_drpo \
     +trainer.remove_previous_ckpt_in_save=False \
     +trainer.del_local_ckpt_after_load=False \
     trainer.resume_mode=disable \
-    trainer.default_local_dir=//home/chase/test_ckpts/drpo_async \
-    trainer.resume_from_path=$SPECIFIC_CHECKPOINT \
+    trainer.default_local_dir=test_ckpts/drpo_async \
     trainer.n_gpus_per_node=8 \
     trainer.nnodes=1 \
     trainer.save_freq=10 \
     trainer.test_freq=10 \
     trainer.total_epochs=15 \
-    +trainer.env=//home/chase/.env \
-    +actor_rollout_ref.actor.checkpoint.path=$SPECIFIC_CHECKPOINT \
     +actor_rollout_ref.actor.checkpoint.contents=[model,optimizer,extra,tokenizer,dataloader] \
     $@
